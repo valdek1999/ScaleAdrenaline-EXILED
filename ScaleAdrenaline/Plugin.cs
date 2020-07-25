@@ -23,8 +23,10 @@ namespace ScaleAdrenaline
 		public EventHandler EventHandler;
 		public override void OnEnabled()
 		{
+
 			try
 			{
+				
 				Log.Info("привееееееет");
 				EventHandler = new EventHandler(this);
 				base.OnEnabled();
@@ -38,10 +40,13 @@ namespace ScaleAdrenaline
 		internal void RegisterEvents()
 		{
 			Handlers.Player.MedicalItemUsed += EventHandler.UsedAdrenaline;
+			Handlers.Server.RoundStarted += EventHandler.RoundStart;
+			//Handlers.Player.MedicalItemUsed += EventHandler.CountAdrenaline;
 		}
 		public override void OnDisabled()
 		{
 			Handlers.Player.MedicalItemUsed -= EventHandler.UsedAdrenaline;
+			Handlers.Server.RoundStarted -= EventHandler.RoundStart;
 		}
 
 		public override void OnReloaded()

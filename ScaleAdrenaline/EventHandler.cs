@@ -8,17 +8,19 @@ using MEC;
 using Mirror;
 using Exiled.Events.EventArgs;
 using Exiled.API.Features;
+using Object = UnityEngine.Object;
 
 namespace ScaleAdrenaline
 {
     public class EventHandler
     {
+        System.Random random = new System.Random();
         readonly public Plugin plugin;
         List<UsedItem> usedItems = new List<UsedItem>();
+        List<Pickup> items = new List<Pickup>();
         public EventHandler(Plugin plugin)
         {
-            this.plugin = plugin;
-            
+            this.plugin = plugin;            
         }
 
         public List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
@@ -31,13 +33,43 @@ namespace ScaleAdrenaline
         internal void RoundStart()
         {
             
+            foreach (Pickup item in Object.FindObjectsOfType<Pickup>())
+            {
+                if (item.ItemId.ToString() == "Adrenaline")
+                {
+                    items.Add(item);
+                }
+            }
+            for (int i = items.Count - 1; i >= 1; i--)
+            {
+                int j = random.Next(i + 1);
+                // обменять значения data[j] и data[i]
+                var temp = items[j];
+                items[j] = items[i];
+                items[i] = temp;
+            }
+            for(int i = plugin.Config.MaxCountAdrenaline;i<items.Count;i++)
+            {
+                items[i].Delete();
+            }
+
             foreach (CoroutineHandle handle in coroutines)
             {
                 Timing.KillCoroutines(handle);
             }
         }
 
-       
+        //internal void CountAdrenaline(UsedMedicalItemEventArgs ev)
+        //{
+        //    foreach (Pickup item in Object.FindObjectsOfType<Pickup>())
+        //    {
+        //        if (item.ItemId.ToString() == "Adrenaline")
+        //        {
+        //            Log.Info("id: " + item.ItemId + "\nname: " + item.name);
+        //        }
+                
+        //    }
+        //}
 
         internal void UsedAdrenaline(UsedMedicalItemEventArgs item)
         {

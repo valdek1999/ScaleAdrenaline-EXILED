@@ -22,5 +22,7 @@ namespace ScaleAdrenaline
         public float[] Step3 { get; set; } = { 2.0f, 1.8f, 1.6f, 1.4f, 1.2f, 1.0f };
 
         public float Duration { get; set; } = 10.0f;
+
+        public int MaxCountAdrenaline { get; set; } = 3;
     }
 }
