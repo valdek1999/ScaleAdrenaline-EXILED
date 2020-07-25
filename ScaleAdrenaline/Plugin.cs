@@ -41,7 +41,7 @@ namespace ScaleAdrenaline
 		}
 		public override void OnDisabled()
 		{
-			
+			Handlers.Player.MedicalItemUsed -= EventHandler.UsedAdrenaline;
 		}
 
 		public override void OnReloaded()
