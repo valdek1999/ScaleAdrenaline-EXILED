@@ -40,8 +40,8 @@ namespace ScaleAdrenaline
 		internal void RegisterEvents()
 		{
 			Handlers.Player.MedicalItemUsed += EventHandler.UsedAdrenaline;
-			Handlers.Server.RoundStarted += EventHandler.RoundStart;
-			//Handlers.Player.MedicalItemUsed += EventHandler.CountAdrenaline;
+			Handlers.Server.RoundStarted += EventHandler.RoundStart;		
+			/*Нandlers.Player.MedicalItemUsed += EventHandler.CountAdrenaline;*/
 		}
 		public override void OnDisabled()
 		{
