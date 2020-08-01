@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ScaleAdrenaline
 {
-    class UsedItem
+    public class UsedItem
     {
         public UsedMedicalItemEventArgs item;
         public bool status;
@@ -28,7 +28,7 @@ namespace ScaleAdrenaline
             }
             UsedItem temp = (UsedItem)obj;
 
-            if (item.Player.Nickname == temp.item.Player.Nickname && status == temp.status)
+            if (item.Player.Id == temp.item.Player.Id && status == temp.status)
                 return true;
             else
                 return false;

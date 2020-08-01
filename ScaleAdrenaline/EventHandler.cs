@@ -1,6 +1,7 @@
 ﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using MEC;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -11,8 +12,8 @@ namespace ScaleAdrenaline
     {
         private readonly System.Random random = new System.Random();
         public readonly Plugin plugin;
-        private readonly List<UsedItem> usedItems = new List<UsedItem>();
-        private readonly List<Pickup> items = new List<Pickup>();
+        public List<UsedItem> usedItems = new List<UsedItem>();
+        public List<Pickup> items = new List<Pickup>();
         public EventHandler(Plugin plugin)
         {
             this.plugin = plugin;
@@ -27,7 +28,9 @@ namespace ScaleAdrenaline
 
         internal void RoundStart()
         {
-
+            coroutines = new List<CoroutineHandle>();
+            usedItems = new List<UsedItem>();
+            items = new List<Pickup>();
             foreach (Pickup item in Object.FindObjectsOfType<Pickup>())
             {
                 if (item.ItemId.ToString() == "Adrenaline")
@@ -43,17 +46,15 @@ namespace ScaleAdrenaline
                 items[j] = items[i];
                 items[i] = temp;
             }
+            if(items.Count>0)
             for (int i = plugin.Config.MaxCountAdrenaline; i < items.Count; i++)
             {
-                items[i].Delete();
+                if (items[0] != null)
+                    items[0].Delete();
             }
 
-            foreach (CoroutineHandle handle in coroutines)
-            {
-                Timing.KillCoroutines(handle);
-            }
+            
         }
-
         //internal void CountAdrenaline(UsedMedicalItemEventArgs ev)
         //{
         //    foreach (Pickup item in Object.FindObjectsOfType<Pickup>())
@@ -68,7 +69,7 @@ namespace ScaleAdrenaline
 
         internal void UsedAdrenaline(UsedMedicalItemEventArgs item)
         {
-            Log.Info(item.Item.ToString());
+            
             if (item.Item.ToString() == "Adrenaline")
             {
                 UsedItem usedItem = new UsedItem(item);
@@ -83,38 +84,46 @@ namespace ScaleAdrenaline
 
         private bool usedFind(UsedMedicalItemEventArgs item)
         {
+            UsedItem temp = new UsedItem(item);
             string name = item.Player.Nickname;
             foreach (UsedItem t in usedItems)
             {
-                if (name == t.item.Player.Nickname)
+                if (temp.Equals(t))
                 {
                     return true;
                 }
             }
             return false;
         }
-
         public IEnumerator<float> SetPlayerScale(UsedMedicalItemEventArgs item)
         {
 
             foreach (float t in plugin.Config.Step1)
             {
-                item.Player.Scale = Vector3.one * t;
+                if (item.Player.Scale != null)
+                    item.Player.Scale = Vector3.one * t;
+                else yield break;
                 yield return Timing.WaitForSeconds(plugin.Config.TimeAllSteps);
             }
-            yield return Timing.WaitForSeconds(plugin.Config.Duration);
+            if (item.Player.Scale != null)
+                yield return Timing.WaitForSeconds(plugin.Config.Duration);
             foreach (float t in plugin.Config.Step2)
             {
-                item.Player.Scale = Vector3.one * t;
+                if (item.Player.Scale != null)
+                    item.Player.Scale = Vector3.one * t;
+                else yield break;
                 yield return Timing.WaitForSeconds(plugin.Config.TimeAllSteps);
             }
-            yield return Timing.WaitForSeconds(plugin.Config.Duration);
+            if (item.Player.Scale != null)
+                yield return Timing.WaitForSeconds(plugin.Config.Duration);
             foreach (float t in plugin.Config.Step3)
             {
-                item.Player.Scale = Vector3.one * t;
+                if (item.Player.Scale != null)
+                    item.Player.Scale = Vector3.one * t;
+                else yield break;
                 yield return Timing.WaitForSeconds(plugin.Config.TimeAllSteps);
             }
-            yield return Timing.WaitForSeconds(plugin.Config.Duration);
+            yield return Timing.WaitForSeconds(0);
             usedItems.RemoveAt(0);
             if (usedItems.Count == 0)
             {
@@ -124,13 +133,7 @@ namespace ScaleAdrenaline
                 }
             }
         }
-        internal void WaitingForPlayers()
-        {
-            foreach (CoroutineHandle handle in coroutines)
-            {
-                Timing.KillCoroutines(handle);
-            }
-        }
+        
     }
 
 
